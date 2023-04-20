@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#define N 50
+#define N 25
 
 int main() {
     for (int i = 0; i < N; i++) {
