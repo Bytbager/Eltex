@@ -5,11 +5,6 @@
 int main() {
     int res = N * N, start = 1, up = 0, down = N - 1, left = 0, right = N - 1;
     int arr[N][N];
-    // for (int i = 0; i < N; i++) {
-    //     for (int j = 0; j < N; j++) {
-    //         arr[i][j] = 0;
-    //     }
-    // }
     int i = 0, j = 0;
     while (start != res + 1) {
         if (i == up && j != right) {
