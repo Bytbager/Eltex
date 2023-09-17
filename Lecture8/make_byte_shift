@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mkdir build
+mkdir build/byte_shift
+make byte_shift \
+    BYTE_SHIFT_DIR=../../byte_shift \
+    --directory=build/byte_shift \
+    --makefile=../../Makefile

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mkdir build
+mkdir build/hexadecimal_number
+make hexadecimal_number \
+    HEXADECIMAL_NUMBER_DIR=../../hexadecimal_number \
+    --directory=build/hexadecimal_number \
+    --makefile=../../Makefile

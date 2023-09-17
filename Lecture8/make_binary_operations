@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mkdir build
+mkdir build/binary_operations
+make binary_operations \
+    BINARY_OPERATIONS_DIR=../../binary_operations \
+    --directory=build/binary_operations \
+    --makefile=../../Makefile
