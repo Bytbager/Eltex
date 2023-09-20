@@ -8,9 +8,9 @@
 #include <malloc.h>
 
 struct People {
-    char name[64];
-    char surname[64];
-    char phone_number[64];
+    char *name;
+    char *surname;
+    char *phone_number;
 };
 
 #define OK 0
