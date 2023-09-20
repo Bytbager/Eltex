@@ -5,12 +5,6 @@ int main() {
     int subscriber_count = 0;
     int option = 0;
     int err = OK;
-    list = malloc(sizeof(struct People));
-    if (list == NULL) {
-        perror("List didn't get memory!\n");
-        err = ERROR;
-        quit_program(&subscriber_count, list, err);
-    }
     while(option != 4) {
         printf("Choose option:\n1 - add new subscriber.\n"
                 "2 - delete subscriber.\n3 - show subscriber"
@@ -23,19 +17,32 @@ int main() {
                     if (list == NULL) {
                         perror("List didn't get memory!\n");
                         err = ERROR;
-                        quit_program(&subscriber_count, list, err);
+                        quit_program(list, err);
+                    }
+                } else if (subscriber_count == 0) {
+                    list = malloc(sizeof(struct People));
+                    if (list == NULL) {
+                        perror("List didn't get memory!\n");
+                        err = ERROR;
+                        quit_program(list, err);
                     }
                 }
                 new_subscriber(&subscriber_count, list);
                 break;
             case 2:
                 delete_subscriber(&subscriber_count, list);
+                list = realloc(list, subscriber_count * sizeof(struct People));
+                if (list == NULL && subscriber_count > 0) {
+                    perror("List didn't get memory!\n");
+                    err = ERROR;
+                    quit_program(list, err);
+                }
                 break;
             case 3:
                 show_subscriber_list(&subscriber_count, list);
                 break;
             case 4:
-                quit_program(&subscriber_count, list, err);
+                quit_program(list, err);
                 break;
             default:
                 printf("Incorrect option! Try again!\n");

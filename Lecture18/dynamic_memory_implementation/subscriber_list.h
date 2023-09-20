@@ -8,9 +8,9 @@
 #include <malloc.h>
 
 struct People {
-    char name[64];
-    char surname[64];
-    char phone_number[64];
+    char name[20];
+    char surname[20];
+    char phone_number[20];
 };
 
 #define OK 0
@@ -19,6 +19,6 @@ struct People {
 int new_subscriber(int *subscriber_count, struct People *list);
 int delete_subscriber(int *subscriber_count, struct People *list);
 int show_subscriber_list(int *subscriber_count, struct People *list);
-int quit_program(int *subscriber_count, struct People *list, int error);
+int quit_program(struct People *list, int error);
 
 #endif //__SUBSCRIBER_LIST_H__

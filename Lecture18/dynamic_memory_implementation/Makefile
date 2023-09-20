@@ -1,5 +1,7 @@
 .PHONY: all clean rebuild subscriber_list
 
+all: subscriber_list
+
 subscriber_list: $(patsubst %.c, %.o, $(wildcard *.c))
 	gcc $^ -o $@ -g
 
