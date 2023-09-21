@@ -20,17 +20,14 @@ int delete_subscriber(int *subscriber_count, struct People *list) {
     int index = 0;
     int inner_index = 0;
     int delete_flag = 0;
-    char *buffer = malloc(20);
+    char *buffer = malloc(2048);
     if (buffer == NULL) {
         perror("Buffer didn't get memory!\n");
         err = ERROR;
         quit_program(subscriber_count, list, err);
     }
-    do {
-        printf("Input subscriber's phone number:\n"
-                "Maximum 19 symbols!\n");
-        scanf("%s", buffer);
-    } while (strlen(buffer) > 19);
+    printf("Input subscriber's phone number:\n");
+    scanf("%s", buffer);
     for (index; index < *subscriber_count; index++) {
         if (strcmp(list[index].phone_number, buffer) == 0) {
             for (inner_index = index; inner_index < *subscriber_count - 1; inner_index++) {
@@ -40,6 +37,9 @@ int delete_subscriber(int *subscriber_count, struct People *list) {
             }
             delete_flag+=1;
             *subscriber_count-=1;
+            free(list[*subscriber_count].name);
+            free(list[*subscriber_count].surname);
+            free(list[*subscriber_count].phone_number);
             break;
         }
     }
@@ -49,5 +49,6 @@ int delete_subscriber(int *subscriber_count, struct People *list) {
     } else {
         printf("Subscriber deleted!\n");
     }
+    free(buffer);
     return err;
 }
