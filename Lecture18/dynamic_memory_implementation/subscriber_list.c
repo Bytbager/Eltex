@@ -17,14 +17,14 @@ int main() {
                     if (list == NULL) {
                         perror("List didn't get memory!\n");
                         err = ERROR;
-                        quit_program(list, err);
+                        quit_program(&subscriber_count, list, err);
                     }
                 } else if (subscriber_count == 0) {
                     list = malloc(sizeof(struct People));
                     if (list == NULL) {
                         perror("List didn't get memory!\n");
                         err = ERROR;
-                        quit_program(list, err);
+                        quit_program(&subscriber_count, list, err);
                     }
                 }
                 new_subscriber(&subscriber_count, list);
@@ -35,14 +35,14 @@ int main() {
                 if (list == NULL && subscriber_count > 0) {
                     perror("List didn't get memory!\n");
                     err = ERROR;
-                    quit_program(list, err);
+                    quit_program(&subscriber_count, list, err);
                 }
                 break;
             case 3:
                 show_subscriber_list(&subscriber_count, list);
                 break;
             case 4:
-                quit_program(list, err);
+                quit_program(&subscriber_count, list, err);
                 break;
             default:
                 printf("Incorrect option! Try again!\n");

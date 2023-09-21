@@ -20,11 +20,11 @@ int delete_subscriber(int *subscriber_count, struct People *list) {
     int index = 0;
     int inner_index = 0;
     int delete_flag = 0;
-    char buffer = malloc(20);
+    char *buffer = malloc(20);
     if (buffer == NULL) {
         perror("Buffer didn't get memory!\n");
         err = ERROR;
-        quit_program(list, err);
+        quit_program(subscriber_count, list, err);
     }
     do {
         printf("Input subscriber's phone number:\n"
