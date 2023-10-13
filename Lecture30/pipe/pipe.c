@@ -1,5 +1,13 @@
 #include "pipe.h"
 
+/*
+Функция создает 2 канала для общения с потомком,
+родитель использует первый канал для чтения, второй канал
+для записи, потом использует каналы наоборот.
+
+Родитель и потомок обмениваются сообщениями между собой,
+после этого функция завершается.
+*/
 int main() {
     int first_pipe[2];
     int second_pipe[2];
@@ -19,5 +27,9 @@ int main() {
         pipe_parent(first_pipe[0], second_pipe[1]);
         wait(&status);
     }
+    close(first_pipe[0]);
+    close(first_pipe[1]);
+    close(second_pipe[0]);
+    close(second_pipe[1]);
     return 0;
 }
