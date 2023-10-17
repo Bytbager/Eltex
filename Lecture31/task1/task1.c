@@ -8,13 +8,8 @@ int main() {
     int fildes;
     char message[8];
     /*Создаем файл с помощью флага O_CREAT*/
-    if ((fildes = open("filename.txt", O_CREAT)) == -1) {
+    if ((fildes = open("filename.txt", O_CREAT, S_IRWXU)) == -1) {
         perror("open creat error\n");
-        _exit(-1);
-    }
-    /*Даем пользователю полный доступ к файлу*/
-    if (chmod("filename.txt", S_IRWXU) == -1) {
-        perror("chmod error\n");
         _exit(-1);
     }
     /*Закрываем дескриптор*/
