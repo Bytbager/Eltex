@@ -6,8 +6,6 @@ int main() {
   struct message sendbuffer, *recvbuffer;
   char *buffer = malloc(128);
   memset(buffer, 0, 128);
-  recvbuffer = malloc(sizeof(struct message));
-  memset(recvbuffer, 0, sizeof(struct message));
   socklen_t recvfr_len;
   server_fd = socket(AF_INET, SOCK_RAW, IPPROTO_UDP); /*Создаем сокет типа SOCK_RAW, протокол UDP, семейства AF_INET*/
   if (server_fd == -1)
@@ -29,13 +27,14 @@ int main() {
   while (1) {
     if (recvfrom(server_fd, buffer, 128, 0, NULL, NULL) == -1) /*Получаем ответ от сервера, не сохраняем его эндпоинт, он нам не нужен*/
       errExit("recv error\n");
-    buffer = buffer + 20;                     /*В полученном сообщении пропускаем первые 20 байт, чтобы убрать IP заголовок*/
-    recvbuffer = (struct message *)buffer;    /*Далее проверяем порт назначения, который ранее мы указывали как порт источника в сообщении серверу*/
+                                                      /*В полученном сообщении пропускаем первые 20 байт, чтобы убрать IP заголовок*/
+    recvbuffer = (struct message *) (buffer + 20);    /*Далее проверяем порт назначения, который ранее мы указывали как порт источника в сообщении серверу*/
     if (ntohs(recvbuffer->destination_port) == CLIENT_PORT_NUM) {   /*Если он совпал, выводим payload, и выходим из цикла*/
       printf("Server: %s\n", recvbuffer->payload);
       break;
     }
   }
+  free(buffer);
   if (close(server_fd) == -1)     /*Закрываем дескриптор сервера, завершаем программу*/
     errExit("close error\n");
   return 0;
