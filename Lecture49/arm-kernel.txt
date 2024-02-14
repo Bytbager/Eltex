@@ -1,0 +1,44 @@
+Сборка ядра ARM v5.10
+
+Исходники ядра были взяты отсюда:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+
+Кросс компилятор устанавливал так:
+sudo apt-get arm-linux-gnueabihf
+
+При вводе команды:
+arm-linux-gnueabihf-gcc --version
+
+Выводится на экран версия моего кросс компилятора:
+arm-linux-gnueabihf-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+
+При поптыке собрать ядро этим компилятором, появлялись ошибки, скриншот в файле errors.png
+
+Собирал так:
+make mrproper
+ARCH=arm make defconfig
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make -j 6 zImage
+
+Я попробовал использовать другой кросс компилятор, который скачал отсюда:
+https://snapshots.linaro.org/gnu-toolchain/11.3-2022.06-1/arm-linux-gnueabihf/
+
+Поменял компилятор при сборке:
+make mrproper
+ARCH=arm make defconfig
+ARCH=arm CROSS_COMPILE=/usr/gcc-linaro-11.3.1-2022.06-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- make -j 6 zImage
+
+Ядро собралось, скриншот kernel_success.png
+
+Далее нужно скомпилировать dts файл в dtb, для этого устанавливаем device tree compiler:
+sudo apt-get install device-tree-compiler
+
+Компилируем:
+ARCH=arm make -j 6 dtbs
+
+Для удобства переходим в каталог boot:
+cd arch/arm/boot
+
+Запускаем ядро в qemu:
+QEMU_AUDIO_DRV=none qemu-system-arm -M vexpress-a9 -dtb dts/vexpress-v2p-ca9.dtb -kernel zImage -append "console=ttyAMA0" -nographic
+
+Ядро запускается, но потом рушится, потому что нет файловой системы, скриншоты qemu_success.png, qemu_kernel_panic.png
