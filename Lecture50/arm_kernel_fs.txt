@@ -1,0 +1,38 @@
+Сборка файловой системы для ARM ядра из предыдущей лекции с помощью busybox
+
+Он был взят отсюда:
+https://busybox.net/downloads/
+
+Создаём конфиг для статической сборки:
+ARCH=arm make defconfig
+ARCH=arm make menuconfig
+
+В открывшемся меню ставим статическую сборку и указываем префикс компилятора, скриншот menuconfig.png
+
+Далее выполняем:
+ARCH=arm make -j 6
+ARCH=arm make install
+rm -rf _install/linuxrc
+cd _install/
+find . | cpio -o -H newc | gzip > initramfs.cpio.gz
+
+На выходе получаем готовую файловую систему, копируем её в папку с ядром и можем запускать:
+QEMU_AUDIO_DRV=none qemu-system-arm -M vexpress-a9 -dtb dts/vexpress-v2p-ca9.dtb 
+-initrd initramfs.cpio.gz -kernel zImage -append "console=ttyAMA0 rdinit=/bin/ash" -nographic
+
+Скриншоты запуска qemu_success.png, whoami.png
+
+Для динамической сборки создаем такой же конфиг за исключением настройки про статическую сборку
+Выполняем make и make install
+Создаём папку _install/lib
+
+Далее смотрим от каких библиотек зависит наша файловая система:
+arm-linux-gnueabihf-readelf -d busybox
+
+Получаем список нужных библиотек и добавляем их в созданную папку, скриншот lib.png:
+ 0x00000001 (NEEDED)                     Совм. исп. библиотека: [libm.so.6]
+ 0x00000001 (NEEDED)                     Совм. исп. библиотека: [libresolv.so.2]
+ 0x00000001 (NEEDED)                     Совм. исп. библиотека: [libc.so.6]
+ 0x00000001 (NEEDED)                     Совм. исп. библиотека: [ld-linux-armhf.so.3]
+
+Далее также создаем initramfs, копируем в папку с ядром и запускаем, скриншот dynamic_whoami.png
