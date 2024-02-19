@@ -1,0 +1,4 @@
+make mrproper
+cp ../../../boot/config-6.2.0-37-generic .config
+make menuconfig
+make -j 6 vmlinux

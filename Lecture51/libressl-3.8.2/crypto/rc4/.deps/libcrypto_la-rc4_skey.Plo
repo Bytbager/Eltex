@@ -1,0 +1,11 @@
+rc4/libcrypto_la-rc4_skey.lo: rc4/rc4_skey.c \
+ /usr/arm-linux-gnueabihf/include/stdc-predef.h ../include/openssl/rc4.h \
+ ../include/openssl/opensslconf.h ../include/openssl/opensslfeatures.h \
+ /usr/lib/gcc-cross/arm-linux-gnueabihf/11/include/stddef.h \
+ rc4/rc4_local.h
+/usr/arm-linux-gnueabihf/include/stdc-predef.h:
+../include/openssl/rc4.h:
+../include/openssl/opensslconf.h:
+../include/openssl/opensslfeatures.h:
+/usr/lib/gcc-cross/arm-linux-gnueabihf/11/include/stddef.h:
+rc4/rc4_local.h:

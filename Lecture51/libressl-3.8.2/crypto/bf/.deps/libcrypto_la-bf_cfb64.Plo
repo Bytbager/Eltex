@@ -1,0 +1,9 @@
+bf/libcrypto_la-bf_cfb64.lo: bf/bf_cfb64.c \
+ /usr/arm-linux-gnueabihf/include/stdc-predef.h \
+ ../include/openssl/blowfish.h ../include/openssl/opensslconf.h \
+ ../include/openssl/opensslfeatures.h bf/bf_local.h
+/usr/arm-linux-gnueabihf/include/stdc-predef.h:
+../include/openssl/blowfish.h:
+../include/openssl/opensslconf.h:
+../include/openssl/opensslfeatures.h:
+bf/bf_local.h:

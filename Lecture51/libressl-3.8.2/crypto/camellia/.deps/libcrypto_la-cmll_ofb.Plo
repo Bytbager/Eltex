@@ -1,0 +1,15 @@
+camellia/libcrypto_la-cmll_ofb.lo: camellia/cmll_ofb.c \
+ /usr/arm-linux-gnueabihf/include/stdc-predef.h \
+ ../include/openssl/camellia.h ../include/openssl/opensslconf.h \
+ ../include/openssl/opensslfeatures.h \
+ /usr/lib/gcc-cross/arm-linux-gnueabihf/11/include/stddef.h \
+ ../crypto/hidden/openssl/modes.h ../include/openssl/modes.h \
+ ../crypto/hidden/crypto_namespace.h
+/usr/arm-linux-gnueabihf/include/stdc-predef.h:
+../include/openssl/camellia.h:
+../include/openssl/opensslconf.h:
+../include/openssl/opensslfeatures.h:
+/usr/lib/gcc-cross/arm-linux-gnueabihf/11/include/stddef.h:
+../crypto/hidden/openssl/modes.h:
+../include/openssl/modes.h:
+../crypto/hidden/crypto_namespace.h:
