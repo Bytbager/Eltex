@@ -12,8 +12,8 @@ int main() {
     errExit("server_fd error\n");
   memset(&server, '\0', sizeof(struct sockaddr_in));  /*Заполняем структуру сервера*/
   server.sin_family = AF_INET;
-  inet_pton(AF_INET, SERV_IP, &server.sin_addr.s_addr);
-  server.sin_port = htons(7777);
+  inet_pton(AF_INET, VM_IP, &server.sin_addr.s_addr);
+  server.sin_port = htons(SERV_PORT_NUM);
   if (bind(server_fd, (struct sockaddr *) &server, sizeof(struct sockaddr_in)) == -1) /*Выполняем привязку структуры сервера к сокету*/
     errExit("bind error\n");
   recvbuffer = malloc(16);

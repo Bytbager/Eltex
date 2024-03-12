@@ -16,12 +16,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define PC_INDEX "enp5s0"
-#define VM_INDEX "virbrmgmt0"
-#define PC_MAC "52:54:00:6b:47:fe"
-#define VM_MAC "52:54:00:3e:23:63"
-#define SERV_IP "192.168.33.2"
-#define CLIENT_IP "192.168.33.1"
+#define MASK 0b1111111111111111
+#define PC_INDEX "br-enp2s0"
+#define PC_MAC "6e:ef:a1:c2:4f:95"
+#define VM_MAC "52:54:00:83:2e:48"
+#define PC_IP "192.168.1.207"
+#define VM_IP "192.168.1.142"
 #define SERV_PORT_NUM 7777
 #define CLIENT_PORT_NUM 7778
 

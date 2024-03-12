@@ -17,22 +17,21 @@ int main() {
   int server_fd;
   struct sockaddr_ll server;
   int flag = 1;
-  char dest[32];
-  memset(dest, 0 , 32);
-  server_fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); /*Создаем сокет типа SOCK_RAW, протокол UDP, семейства AF_INET*/
+  server_fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)); /*Создаем сокет типа SOCK_RAW, семейства AF_PACKET*/
   if (server_fd == -1)
     errExit("server_fd error\n");
   
   memset(&server, 0, sizeof(struct sockaddr_ll));       /*Заполняем структуру сервера*/
   server.sll_family = AF_PACKET;
-  server.sll_ifindex = if_nametoindex(VM_INDEX);
+  server.sll_protocol = htons(ETHERTYPE_IP);
+  server.sll_ifindex = if_nametoindex(PC_INDEX);
   server.sll_halen = 6;
   server.sll_addr[0] = 0x52;
   server.sll_addr[1] = 0x54;
   server.sll_addr[2] = 0x00;
-  server.sll_addr[3] = 0x3e;
-  server.sll_addr[4] = 0x23;
-  server.sll_addr[5] = 0x63;
+  server.sll_addr[3] = 0x83;
+  server.sll_addr[4] = 0x2e;
+  server.sll_addr[5] = 0x48;
 
   message_create(&ether, &ip, &udp, &payload);                                 /*Заполняем сообщение серверу*/
   
@@ -41,15 +40,34 @@ int main() {
   buffer += sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct udphdr);
   printf("Client: %s\n", buffer);
   buffer -= sizeof(struct ether_header) + sizeof(struct iphdr) + sizeof(struct udphdr);
+  
+  uint32_t our_ip = 0;
+  if (inet_pton(AF_INET, PC_IP, &our_ip) == -1)
+    errExit("inet_pton our_ip error!\n");
+  
   while (1) {
+    memset(payload, 0, 16);
     if (recvfrom(server_fd, buffer, bufsize, 0, NULL, NULL) == -1) /*Получаем ответ от сервера, не сохраняем его эндпоинт, он нам не нужен*/
       errExit("recv error\n");
-    inet_ntop(AF_INET, &ip->saddr, dest, 32);
-    if (ether->ether_shost[0] == 0x52 && ether->ether_shost[5] == 0x63)
-    printf("from - %x:%x:%x:%x:%x:%x, IP - %s\n", ether->ether_shost[0], ether->ether_shost[1], ether->ether_shost[2],
-    ether->ether_shost[3], ether->ether_shost[4], ether->ether_shost[5], dest);
+
+    unsigned short *pcheck = (short *)ip;         /*Вычисляем чексумму входящих пакетов и проверяем их целостность*/
+    volatile unsigned int big_check = 0;
+    unsigned short tmp = 0;
+
+    for (int i = 0; i < 10; i++, pcheck++)
+      big_check = big_check + *pcheck;
+
+    tmp = big_check >> 16;
+    *pcheck = (big_check & 0xFFFF) + tmp;
+    
+    if (*pcheck == MASK)
+      printf("check good\n");
+    else {
+      printf("check bad\n");
+      continue;
+    }
     /*Далее проверяем порт и адрес назначения, которые ранее мы указывали как порт и адрес источника в сообщении серверу*/
-    if (ntohs(udp->dest) == CLIENT_PORT_NUM && strcmp(dest, CLIENT_IP) == 0) {   /*Если они совпал, выводим payload, и выходим из цикла*/
+    if (ntohs(udp->dest) == CLIENT_PORT_NUM && our_ip == ip->daddr) {   /*Если они совпал, выводим payload, и выходим из цикла*/
       printf("Server: %s\n", payload);
       break;
     }
