@@ -1,16 +1,18 @@
-#include <linux/atomic.h>
 #include <linux/device.h>
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
+#include <linux/kobject.h>
 #include <linux/module.h>
 #include <linux/printk.h>
 #include <linux/proc_fs.h>
 #include <linux/rwlock.h>
+#include <linux/string.h>
 #include <linux/version.h>
 
 #define DEVICE_NAME "hellodev"
 #define PROC_NAME "helloproc"
+#define KOBJ_NAME "hellokobj"
 #define STRING_LEN 64
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
@@ -32,7 +34,7 @@ enum {
     DEV_OPENED = 1,
 };
 
-ssize_t hello_dev_read(struct file *fd, char __user *buff, size_t size, loff_t *off) {
+static ssize_t hello_read(struct file *fd, char __user *buff, size_t size, loff_t *off) {
     size_t rc;
 
     read_lock(&lock);
@@ -42,7 +44,7 @@ ssize_t hello_dev_read(struct file *fd, char __user *buff, size_t size, loff_t *
     return rc;
 }
 
-ssize_t hello_dev_write(struct file *fd, const char __user *buff, size_t size, loff_t *off) {
+static ssize_t hello_write(struct file *fd, const char __user *buff, size_t size, loff_t *off) {
     size_t rc;
 
     if (size > STRING_LEN) return -EINVAL;
@@ -54,23 +56,22 @@ ssize_t hello_dev_write(struct file *fd, const char __user *buff, size_t size, l
     return rc;
 }
 
-ssize_t hello_proc_read(struct file *fd, char __user *buff, size_t size, loff_t *off) {
+static ssize_t hello_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf) {
     size_t rc;
 
     read_lock(&lock);
-    rc = simple_read_from_buffer(buff, size, off, hello_string, STRING_LEN);
+    rc = sprintf(buf, "%s", hello_string);
     read_unlock(&lock);
 
     return rc;
 }
 
-ssize_t hello_proc_write(struct file *fd, const char __user *buff, size_t size, loff_t *off) {
+static ssize_t hello_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count) {
     size_t rc;
 
-    if (size > STRING_LEN) return -EINVAL;
-
     write_lock(&lock);
-    rc = simple_write_to_buffer(hello_string, STRING_LEN, off, buff, size);
+    memcpy(hello_string, buf, count);
+    rc = strlen(buf);
     write_unlock(&lock);
 
     return rc;
@@ -78,23 +79,39 @@ ssize_t hello_proc_write(struct file *fd, const char __user *buff, size_t size, 
 
 static struct file_operations fops = {
     .owner = THIS_MODULE,
-    .read = hello_dev_read,
-    .write = hello_dev_write
+    .read = hello_read,
+    .write = hello_write
 };
 
 #ifdef HAVE_PROC_OPS
 static struct proc_ops pops = {
-    .proc_read = hello_proc_read,
-    .proc_write = hello_proc_write
+    .proc_read = hello_read,
+    .proc_write = hello_write
 };
 #else
 static struct file_operations pops = {
-    .read = hello_proc_read,
-    .write = hello_proc_write
+    .read = hello_read,
+    .write = hello_write
 };
 #endif
 
+static struct kobj_attribute hello_attr =
+    __ATTR(hello_string, 0664, hello_show, hello_store);
+
+static struct attribute *attrs[] = {
+    &hello_attr.attr,
+    NULL,
+};
+
+static struct attribute_group group = {
+    .attrs = attrs,
+};
+
+static struct kobject *hello_kobj;
+
 static int __init hello_module_init(void) {
+    int retval;
+    
     pr_info("Hello, World!\n");
     
     rwlock_init(&lock);
@@ -119,6 +136,16 @@ static int __init hello_module_init(void) {
     }
     pr_info("Proc created: /proc/%s\n", PROC_NAME);
 
+    hello_kobj = kobject_create_and_add(KOBJ_NAME, kernel_kobj);
+    if (!hello_kobj)
+        return -ENOMEM;
+
+    retval = sysfs_create_group(hello_kobj, &group);
+    if (retval) {
+        kobject_put(hello_kobj);
+        return retval;
+    }
+
     return 0;
 }
 
@@ -128,6 +155,8 @@ static void __exit hello_module_exit(void) {
     unregister_chrdev(major, DEVICE_NAME);
     
     proc_remove(proc_file);
+
+    kobject_put(hello_kobj);
 
     pr_info("Goodbye, World!\n");
 }
