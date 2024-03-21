@@ -1,20 +1,27 @@
 #include "../my_chat.h"
 
-int start_screen(mqd_t ctosDS) {
-    WINDOW *boxwin;
-    WINDOW *textwin;
-    struct User me;
+WINDOW *start_screen_win;
+/*
+Функция выводит стартовое меню программы.
+*/
+void start_screen(struct User *me) {
     int y, x;
-    me.pid = getpid();
-    getmaxyx(stdscr, y, x);
-    boxwin = newwin(y / 5, x / 5, y / 5 * 2, x / 5 * 2);
-    box(boxwin, 0, 0);
-    wrefresh(boxwin);
-    textwin = derwin(boxwin, y / 5 - 2, x / 5 - 2, 1, 1);
-    mvwprintw(textwin, 1, x / 15 - 2, "Enter your nickname:");
-    wrefresh(textwin);
-    mvwgetstr(textwin, 3, x / 15 - 2, me.nickname);
-    if (mq_send(ctosDS, (char *)&me, sizeof(me), 32) == -1)
-        errExit("mq_send error\n");
-    return 0;
+    keypad(curscr, TRUE);
+    cbreak();
+    curs_set(0);
+    getmaxyx(curscr, y, x);
+    start_screen_win = newwin(y / 3, x / 3, y / 3, x / 3);
+    box(start_screen_win, 0, 0);
+    getmaxyx(start_screen_win, y, x);
+    // wattron(start_screen_win, COLOR_PAIR(1));
+    // wbkgd(start_screen_win, COLOR_PAIR(1));
+    mvwprintw(start_screen_win, (y / 3), (x / 3), "Enter your nickname:");
+    mvwprintw(start_screen_win, (y / 3) + 1, (x / 3), "(Maximum 16 symbols)");
+    wrefresh(start_screen_win);
+    mvwgetnstr(start_screen_win, (y / 3) * 2, x / 3, me->nickname, 16);
+    (*me).pid = getpid();
+    delwin(start_screen_win);
+    start_screen_win = NULL;
+    clear();
+    refresh();
 }

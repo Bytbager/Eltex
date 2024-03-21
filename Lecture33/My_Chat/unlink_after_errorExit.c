@@ -6,8 +6,9 @@
 не удалил очереди самостоятельно.
 */
 int main() {
-    mq_unlink(STOC);
-    mq_unlink(CTOS);
-    mq_unlink(USERS_MQ);
+    mq_unlink(SERVTOCLI);
+    mq_unlink(CLITOSERV);
+    mq_unlink(SERVTOUSERTHREAD);
+    mq_unlink(SERVTOMSGTHREAD);
     return 0;
 }
