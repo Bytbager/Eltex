@@ -39,6 +39,13 @@ struct msg_create_args {
     mqd_t *write_mqds;
 };
 
+enum PRIO {
+    MESSAGE = 1,
+    SERVER_RECEIVED_DELETION_REQUEST = 29,
+    DELETED_USER = 30,
+    NEW_USER = 31
+};
+
 void errExit(char *errstr);
 void sig_winch(int signo);
 void users_thread(mqd_t *write_mqds);

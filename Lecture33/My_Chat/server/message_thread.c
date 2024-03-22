@@ -28,7 +28,7 @@ void message_thread() {
         pthread_rwlock_rdlock(&lock);
         tmp = root;
         while (tmp != NULL) {
-            if (mq_send(tmp->user.mqds, buffer, 256, 1) == -1)
+            if (mq_send(tmp->user.mqds, buffer, 256, MESSAGE) == -1)
                 errExit("mq_send tmp->user.mqds error!\n");
             printf("send to %s -- buffer size: %d %s\n", tmp->user.nickname, rc, buffer);
             tmp = tmp->next;
@@ -39,6 +39,5 @@ void message_thread() {
         //     errExit("realloc message_history error!\n");
     
         // strncat(message_history, buffer, 256);
-        // printf("%s\n", message_history);
     }
 }

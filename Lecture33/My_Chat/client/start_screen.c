@@ -13,8 +13,8 @@ void start_screen(struct User *me) {
     start_screen_win = newwin(y / 3, x / 3, y / 3, x / 3);
     box(start_screen_win, 0, 0);
     getmaxyx(start_screen_win, y, x);
-    // wattron(start_screen_win, COLOR_PAIR(1));
-    // wbkgd(start_screen_win, COLOR_PAIR(1));
+    wattron(start_screen_win, COLOR_PAIR(1));
+    wbkgd(start_screen_win, COLOR_PAIR(1));
     mvwprintw(start_screen_win, (y / 3), (x / 3), "Enter your nickname:");
     mvwprintw(start_screen_win, (y / 3) + 1, (x / 3), "(Maximum 16 symbols)");
     wrefresh(start_screen_win);

@@ -60,11 +60,11 @@ int main() {
         if (mq_receive(read_mqds, buff, 256, &prio) == -1)
             errExit("mq_receive error!\n");
 
-        if (prio == 32 || prio == 33) {
+        if (prio == NEW_USER || prio == DELETED_USER) {
             mq_send(user_thread_mqds, buff, 256, prio);
         }
  
-        if (prio == 1) {
+        if (prio == MESSAGE) {
             if (mq_send(msg_thread_mqds, buff, 256, prio) == -1)
                 errExit("mq_send to msg_thread error!\n");
         }
