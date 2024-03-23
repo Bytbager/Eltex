@@ -1,4 +1,4 @@
-#include "system_v_shmem.h"
+#include "../system_v_shmem.h"
 
 int main() {
   key_t shmkey;
