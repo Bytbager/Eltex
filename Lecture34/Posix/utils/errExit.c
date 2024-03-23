@@ -1,4 +1,4 @@
-#include "posix_hello.h"
+#include "../Posix_shmem.h"
 
 /*
 Функция при ошибке в программе выводит текст ошибки
