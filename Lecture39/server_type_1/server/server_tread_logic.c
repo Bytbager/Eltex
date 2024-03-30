@@ -1,33 +1,27 @@
 #include "../server_type.h"
 
-extern pthread_mutex_t m1;
+/*Поток получает дескриптор клиента через атрибут функции.
+Чтобы между потоками не возникало коллизий, в войд указатель
+я записываю значение дескриптора на момент создания потока,
+вместо того, чтобы передавать адрес этого дескриптора.
+Далее я привожу войд указатель к значению инта и пользуюсь им*/
+void server_thread_logic(void *attr) {
+    int client_sock = (int) attr;
+    time_t result;
+    char message[32];
+    memset(message, 0, 32);
 
-void *server_thread_logic(void *temp) {
-  time_t result;
-  int serverFD, clientFD;
-  struct sockaddr_in cliaddr;
-  socklen_t client_len;
-  struct sockaddr_in *servaddr = (struct sockaddr_in *) temp;
-  char msgbuf[32];
-  memset(msgbuf, 0, 32);
-  serverFD = socket(AF_INET, SOCK_STREAM, 0);
-  if (serverFD == -1)
-    errExit("socket thread error\n");
-  if (bind(serverFD, (struct sockaddr *) servaddr, sizeof(struct sockaddr_in)) == -1)
-    errExit("bind thread error\n");
-  if (listen(serverFD, 1) == -1)
-    errExit("listen thread error\n");
-  client_len = sizeof(struct sockaddr_in);
-  clientFD = accept(serverFD, (struct sockaddr *) &cliaddr, &client_len);
-  if (clientFD == -1)
-    errExit("accept thread error\n");
-  result = time(NULL);
-  strcat(msgbuf, asctime(localtime(&result)));
-  if (send(clientFD, msgbuf, strlen(msgbuf), 0) == -1)
-      errExit("send error\n");
-  if (close(clientFD) == -1)
-      errExit("close cli error\n");
-  if (close(serverFD) == -1)
-    errExit("close serverFD thread error\n");
-  pthread_exit(NULL);
+    /*Записываем в сообщение текущее время*/
+    result = time(NULL);
+    strcat(message, asctime(localtime(&result)));
+
+    /*Отправляем сообщение клиенту, закрываем дескриптор
+    и завершаем поток*/
+    if (send(client_sock, message, 32, 0) == -1)
+        errExit("send error!\n");
+
+    if (close(client_sock) == -1)
+        errExit("close cli_sock error!\n");
+    
+    pthread_exit(NULL);
 }

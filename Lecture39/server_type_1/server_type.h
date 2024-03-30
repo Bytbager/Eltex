@@ -18,13 +18,8 @@
 #define SERVER_IP "127.1.1.1"
 #define SERVER_PORT 7777
 
-struct client_args {
-  int thread_number;
-  int serverFD;
-};
-
 void errExit(char *errstr);
-void *server_thread_logic(void *temp);
-void *client_thread_logic(void *temp);
+void server_thread_logic(void *attr);
+void client_thread_logic(void *attr);
 
 #endif //__SERVER_TYPE__
