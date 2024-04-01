@@ -16,14 +16,20 @@ void users_thread(mqd_t *write_mqds) {
         errExit("root calloc error\n");
     root->user.pid = 0;
 
+    /*Открываем очередь для общения с главным потоком*/
     mqds = mq_open(SERVTOUSERTHREAD, O_RDONLY);
     if (mqds == -1)
         errExit("mqds o_wronly open error!\n");
 
+    /*Принимаем сообщения в бесконечном цикле*/
     while(1) {
         mq_receive(mqds, message, 256, &prio);
         new_user = (struct User *) message;
         
+        /*Если приоритет NEW_USER - добавляем пользователя в список,
+        создаем для него очередь сообщений, потом отправляем подтверждение
+        о подключении новому пользователю и структуру пользователя всем пользователям
+        поочередно*/
         if (prio == NEW_USER) {
             pthread_rwlock_wrlock(&lock);
             add_user(&root, &new_user);
@@ -44,7 +50,13 @@ void users_thread(mqd_t *write_mqds) {
                         errExit("mq_send tmp->user.mqds error!\n");
                 tmp = tmp->next;
             }
-        } else if (prio == DELETED_USER) {
+        }
+        
+        /*Если приоритет DELETED_USER - отправляем вышедшему
+        пользователю подтверждение о выходе, а остальным пользователям
+        структуру вышедшего пользователя, также удаляем пользователя из
+        списка*/
+        else if (prio == DELETED_USER) {
             tmp = root;
             while (tmp != NULL) {
                 if (tmp->user.pid == new_user->pid) {

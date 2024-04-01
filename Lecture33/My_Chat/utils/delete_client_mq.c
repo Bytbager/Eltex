@@ -1,5 +1,6 @@
 #include "../my_chat.h"
 
+/*Функция удаляет очередь сообщений вышедшего клиента*/
 int delete_client_mq(struct user_list **root, struct User **exited_user) {
     struct user_list *tmp = *root;
     char mqname[17] = "/\0";

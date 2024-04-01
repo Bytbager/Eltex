@@ -1,5 +1,6 @@
 #include "../my_chat.h"
 
+/*Функция создаёт очередь сообщений для нового клиента*/
 int create_mq_for_client(struct user_list **root, struct User **new_user) {
     struct user_list *tmp = *root;
     struct mq_attr attr = {

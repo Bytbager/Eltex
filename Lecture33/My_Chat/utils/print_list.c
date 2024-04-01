@@ -1,5 +1,6 @@
 #include "../my_chat.h"
 
+/*Функция выводит список пользователей в окно ncurses*/
 int print_list(struct user_list *root, WINDOW *win) {
     struct user_list *tmp = root;
     

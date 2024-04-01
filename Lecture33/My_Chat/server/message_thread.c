@@ -17,27 +17,25 @@ void message_thread() {
     if (message_history == NULL)
         errExit("message_history calloc error!\n");
 
+    /*Открываем очередь для общения с главным потоком*/
     mqds = mq_open(SERVTOMSGTHREAD, O_RDONLY);
     if (mqds == -1)
         errExit("mq_open msg_thread error!\n");
-    int rc = 0;
+
+    /*Принимаем сообщения в бесконечном цикле*/
     while (1) {
         memset(buffer, 0, 256);
         if (mq_receive(mqds, buffer, 256, &prio) == -1)
             errExit("mq_receive msg_thread error!\n");
+
+        /*Отправляем полученные сообщения всем клиентам из списка*/
         pthread_rwlock_rdlock(&lock);
         tmp = root;
         while (tmp != NULL) {
             if (mq_send(tmp->user.mqds, buffer, 256, MESSAGE) == -1)
                 errExit("mq_send tmp->user.mqds error!\n");
-            printf("send to %s -- buffer size: %d %s\n", tmp->user.nickname, rc, buffer);
             tmp = tmp->next;
         }
         pthread_rwlock_unlock(&lock);
-        // message_history = realloc(message_history, strlen(message_history) + strlen(buffer));
-        // if (message_history == NULL)
-        //     errExit("realloc message_history error!\n");
-    
-        // strncat(message_history, buffer, 256);
     }
 }

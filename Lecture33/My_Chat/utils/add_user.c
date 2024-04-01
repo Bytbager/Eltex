@@ -1,5 +1,6 @@
 #include "../my_chat.h"
 
+/*Функция добавляет нового пользователя в односвязный список*/
 int add_user(struct user_list **root, struct User **new_user) {
     struct user_list *tmp = *root;
 

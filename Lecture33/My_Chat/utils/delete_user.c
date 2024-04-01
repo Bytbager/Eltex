@@ -1,5 +1,6 @@
 #include "../my_chat.h"
 
+/*Функция удаляет пользователя из односвязного списка*/
 int delete_user(struct user_list **root, struct User **exited_user) {
     struct user_list *tmp = *root, *exited_tmp;
     
